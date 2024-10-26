@@ -2,9 +2,21 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { FileText, GitBranch, FileCode, Scale } from 'lucide-react';
+import { FileText, GitBranch, FileCode, Scale, LucideIcon } from 'lucide-react';
 
-const Sidebar = ({ isOpen, onClose }) => {
+// Define interfaces for our props and nav items
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+interface NavItem {
+  path: string;
+  icon: LucideIcon;
+  label: string;
+}
+
+const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -13,7 +25,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     setMounted(true);
   }, []);
 
-  const handleNavigation = (path) => {
+  const handleNavigation = (path: string): void => {
     router.push(path);
     onClose();
   };
@@ -22,7 +34,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     return null;
   }
 
-  const navItems = [
+  const navItems: NavItem[] = [
     { path: '/', icon: FileText, label: 'README.md' },
     { path: '/gitignore', icon: GitBranch, label: '.gitignore' },
     { path: '/requirements', icon: FileCode, label: 'requirements.txt' },
