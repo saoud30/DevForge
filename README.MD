@@ -22,9 +22,6 @@
 ## ✨ Introduction
 Welcome to DevForge, your all-in-one solution for project documentation and setup! DevForge combines AI-powered tools with developer-friendly interfaces to streamline your documentation workflow. From README generation to license management, we've got you covered.
 
-<div align="center">
-  <img src="devforge-screenshot.png" alt="DevForge Interface">
-</div>
 
 ## 🚀 Features
 
