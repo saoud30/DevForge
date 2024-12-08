@@ -1,27 +1,34 @@
 "use client";
 
 import { useState } from 'react';
-import { Download, Copy, Check } from 'lucide-react';
-import { generateContent } from '@/lib/api';
+import { Download, Info } from 'lucide-react';
+import { generateWithAI, AI_MODELS } from '@/lib/api';
 import Layout from '@/components/Layout';
 
 export default function RequirementsPage() {
-  const [pythonScript, setPythonScript] = useState('');
+  const [dependencies, setDependencies] = useState('');
   const [generatedContent, setGeneratedContent] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<keyof typeof AI_MODELS>('GEMINI');
   const [copiedFile, setCopiedFile] = useState(false);
   const [copiedDirect, setCopiedDirect] = useState(false);
 
   const handleGenerate = async () => {
-    if (!pythonScript.trim()) return;
+    if (!dependencies) return;
 
     setIsLoading(true);
     try {
-      const prompt = `Given the following Python script, generate a requirements.txt file listing all the necessary dependencies:\n\n${pythonScript}\n\nOnly include direct dependencies, not built-in modules. Format the output as a valid requirements.txt file without any markdown formatting or backticks.`;
-      const content = await generateContent(prompt);
-      setGeneratedContent(content.replace(/```/g, '').trim());
+      const prompt = `Generate a requirements.txt file with these dependencies: ${dependencies}. 
+Return ONLY the package names with versions, one per line, without any explanations or comments.`;
+      
+      const response = await generateWithAI(prompt, selectedModel);
+      if (response.error) {
+        console.error(response.error);
+        return;
+      }
+      setGeneratedContent(response.content.trim());
     } catch (error) {
-      console.error('Error generating requirements.txt:', error);
+      console.error('Error generating requirements:', error);
     } finally {
       setIsLoading(false);
     }
@@ -61,12 +68,12 @@ export default function RequirementsPage() {
       <h2 className="text-2xl font-bold mb-8">PyDeps - Python Dependencies Manager</h2>
       <div className="space-y-4 mb-8">
         <div>
-          <label htmlFor="pythonScript" className="block text-sm font-medium mb-1">Python Script</label>
+          <label htmlFor="dependencies" className="block text-sm font-medium mb-1">Dependencies</label>
           <textarea
-            id="pythonScript"
-            value={pythonScript}
-            onChange={(e) => setPythonScript(e.target.value)}
-            placeholder="Paste your Python script here..."
+            id="dependencies"
+            value={dependencies}
+            onChange={(e) => setDependencies(e.target.value)}
+            placeholder="Paste your dependencies here..."
             className="w-full h-40 p-2 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700"
           />
         </div>
@@ -97,7 +104,7 @@ export default function RequirementsPage() {
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
             <div className="p-4">
               <h3 className="text-lg font-semibold mb-4">Installation Instructions</h3>
-              
+　　 　 　 　
               <div className="space-y-6">
                 {/* Method 1: Using requirements.txt */}
                 <div>
@@ -112,9 +119,9 @@ export default function RequirementsPage() {
                       className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-primary transition-colors"
                     >
                       {copiedFile ? (
-                        <Check size={18} className="text-green-500" />
+                        <Info size={18} className="text-green-500" />
                       ) : (
-                        <Copy size={18} />
+                        <Info size={18} />
                       )}
                     </button>
                   </div>
@@ -140,9 +147,9 @@ export default function RequirementsPage() {
                       className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-primary transition-colors"
                     >
                       {copiedDirect ? (
-                        <Check size={18} className="text-green-500" />
+                        <Info size={18} className="text-green-500" />
                       ) : (
-                        <Copy size={18} />
+                        <Info size={18} />
                       )}
                     </button>
                   </div>

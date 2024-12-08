@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { generateContent } from '@/lib/api';
+import { generateWithAI, AI_MODELS } from '@/lib/api';
 
 const LicenseGenerator = () => {
   const [licenseType, setLicenseType] = useState('');
@@ -29,8 +29,16 @@ const LicenseGenerator = () => {
     setIsLoading(true);
     try {
       const prompt = `Generate a ${licenseType} license for the project "${projectName}" by ${authorName}. Include the current year in the license text.`;
-      const content = await generateContent(prompt);
-      setGeneratedContent(content);
+      const response = await generateWithAI(prompt, 'GEMINI');
+      if (response.error) {
+        toast({
+          title: "Error",
+          description: response.error,
+          variant: "destructive",
+        });
+        return;
+      }
+      setGeneratedContent(response.content.trim());
     } catch (error) {
       toast({
         title: "Error in LICENSE Generator",

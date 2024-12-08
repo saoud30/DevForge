@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { generateContent } from '@/lib/api';
+import { generateWithAI } from '@/lib/api';
 
 const ReadmeGenerator = () => {
   const [projectContext, setProjectContext] = useState('');
@@ -26,8 +26,14 @@ const ReadmeGenerator = () => {
     setIsLoading(true);
     try {
       const prompt = `Generate a README.md for a project with the following context: ${projectContext}. The README should include sections for Project Title, Description, Installation, Usage, Contributing, and License. Make it concise and informative.`;
-      const content = await generateContent(prompt);
-      setGeneratedContent(content);
+      
+      const result = await generateWithAI(prompt, 'GEMINI');
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      setGeneratedContent(result.content);
     } catch (error) {
       toast({
         title: "Error in README Generator",

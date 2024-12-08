@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from 'react';
-import { Download } from 'lucide-react';
-import { generateContent } from '@/lib/api';
+import { Download, Info } from 'lucide-react';
+import { generateWithAI, AI_MODELS } from '@/lib/api';
 import Layout from '@/components/Layout';
 
 export default function LicensePage() {
@@ -12,20 +12,31 @@ export default function LicensePage() {
   const [year, setYear] = useState(new Date().getFullYear().toString());
   const [generatedContent, setGeneratedContent] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<keyof typeof AI_MODELS>('GEMINI');
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 25 }, (_, i) => currentYear - i);
 
   const handleGenerate = async () => {
-    if (!licenseType || !projectName || !authorName) return;
+    if (!licenseType) return;
 
     setIsLoading(true);
     try {
-      const prompt = `Generate a ${licenseType} license for the project "${projectName}" by ${authorName}. Use the year ${year} in the license text.`;
-      const content = await generateContent(prompt);
-      setGeneratedContent(content);
+      const prompt = `Generate a ${licenseType} license with the following details:
+Project: ${projectName}
+Author: ${authorName}
+Year: ${year}
+
+Return ONLY the license text without any explanations or comments.`;
+      
+      const response = await generateWithAI(prompt, selectedModel);
+      if (response.error) {
+        console.error(response.error);
+        return;
+      }
+      setGeneratedContent(response.content.trim());
     } catch (error) {
-      console.error('Error generating LICENSE:', error);
+      console.error('Error generating license:', error);
     } finally {
       setIsLoading(false);
     }

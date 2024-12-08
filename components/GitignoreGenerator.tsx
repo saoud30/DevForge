@@ -6,13 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { generateContent } from '@/lib/api';
+import { generateWithAI, AI_MODELS } from '@/lib/api';
 
 const GitignoreGenerator = () => {
   const [template, setTemplate] = useState('');
   const [customFiles, setCustomFiles] = useState('');
   const [generatedContent, setGeneratedContent] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<keyof typeof AI_MODELS>('GEMINI');
   const { toast } = useToast();
 
   const handleGenerate = async () => {
@@ -27,13 +28,24 @@ const GitignoreGenerator = () => {
 
     setIsLoading(true);
     try {
-      const prompt = `Generate a .gitignore file for a ${template} project. Include standard ignores for the selected template and these additional custom files or patterns: ${customFiles}`;
-      const content = await generateContent(prompt);
-      setGeneratedContent(content);
+      const prompt = `Generate a .gitignore file for a ${template} project${customFiles ? ` with these additional patterns: ${customFiles}` : ''}.
+Return ONLY the patterns, one per line, without any explanations or comments.`;
+      
+      const response = await generateWithAI(prompt, selectedModel);
+      if (response.error) {
+        toast({
+          title: "Error",
+          description: response.error,
+          variant: "destructive",
+        });
+        return;
+      }
+      setGeneratedContent(response.content.trim());
     } catch (error) {
+      console.error('Error generating .gitignore:', error);
       toast({
-        title: "Error in .gitignore Generator",
-        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        title: "Error",
+        description: "Failed to generate .gitignore content",
         variant: "destructive",
       });
     } finally {

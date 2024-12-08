@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Download, Info } from 'lucide-react';
-import { generateContent } from '@/lib/api';
+import { generateWithAI, AI_MODELS } from '@/lib/api';
 import Layout from '@/components/Layout';
 
 export default function GitignorePage() {
@@ -10,6 +10,7 @@ export default function GitignorePage() {
   const [customFiles, setCustomFiles] = useState('');
   const [generatedContent, setGeneratedContent] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<keyof typeof AI_MODELS>('GEMINI');
 
   const handleGenerate = async () => {
     if (!template) return;
@@ -17,8 +18,12 @@ export default function GitignorePage() {
     setIsLoading(true);
     try {
       const prompt = `Generate a .gitignore file for a ${template} project with ONLY these patterns: ${customFiles}. Return ONLY the patterns, one per line, without any explanations or comments.`;
-      const content = await generateContent(prompt);
-      setGeneratedContent(content.trim());
+      const response = await generateWithAI(prompt, selectedModel);
+      if (response.error) {
+        console.error(response.error);
+        return;
+      }
+      setGeneratedContent(response.content.trim());
     } catch (error) {
       console.error('Error generating .gitignore:', error);
     } finally {

@@ -3,16 +3,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import FadeIn from './animations/FadeIn';
+import { ReactNode } from 'react';
 
 interface LayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export default function Layout({ children }: LayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen bg-gray-900 text-white">
       <Header onSidebarToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       <div className="flex">
         <AnimatePresence>
@@ -27,7 +28,7 @@ export default function Layout({ children }: LayoutProps) {
             </motion.div>
           )}
         </AnimatePresence>
-        <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="container mx-auto px-4 py-8">
           <FadeIn>
             <div className="gradient-card rounded-xl p-6">
               {children}

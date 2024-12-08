@@ -1,18 +1,40 @@
 import { useState } from 'react';
-import { ProjectAnalysis } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Loader2, AlertTriangle, CheckCircle } from 'lucide-react';
-import { generateContent } from '@/lib/api';
+import { generateWithAI, AI_MODELS } from '@/lib/api';
+
+interface Dependency {
+  name: string;
+  version: string;
+  vulnerabilities?: string[];
+}
+
+interface License {
+  name: string;
+  compatibility: string[];
+}
+
+interface ProjectAnalysis {
+  dependencies: Dependency[];
+  licenses: License[];
+  recommendations: {
+    gitignore: string[];
+    readme: string[];
+    license: string[];
+  };
+}
 
 export default function ProjectAnalyzer() {
   const [code, setCode] = useState('');
   const [analysis, setAnalysis] = useState<ProjectAnalysis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const analyzeProject = async () => {
     setIsAnalyzing(true);
+    setError(null);
     try {
       const prompt = `Analyze this code and provide recommendations for:
       1. Required dependencies and potential vulnerabilities
@@ -25,10 +47,21 @@ export default function ProjectAnalyzer() {
 
       Return the analysis in a structured JSON format.`;
 
-      const result = await generateContent(prompt);
-      setAnalysis(JSON.parse(result));
+      const result = await generateWithAI(prompt, 'GEMINI');
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      try {
+        const parsedAnalysis = JSON.parse(result.content);
+        setAnalysis(parsedAnalysis);
+      } catch (parseError) {
+        throw new Error('Failed to parse AI response as JSON');
+      }
     } catch (error) {
       console.error('Error analyzing project:', error);
+      setError(error instanceof Error ? error.message : 'An unexpected error occurred');
     } finally {
       setIsAnalyzing(false);
     }
@@ -50,6 +83,14 @@ export default function ProjectAnalyzer() {
         {isAnalyzing && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
         {isAnalyzing ? 'Analyzing...' : 'Analyze Project'}
       </Button>
+
+      {error && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       {analysis && (
         <div className="space-y-4">

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { generateContent } from '@/lib/api';
+import { generateWithAI } from '@/lib/api';
 
 const RequirementsGenerator = () => {
   const [pythonScript, setPythonScript] = useState('');
@@ -25,8 +25,14 @@ const RequirementsGenerator = () => {
     setIsLoading(true);
     try {
       const prompt = `Given the following Python script, generate a requirements.txt file listing all the necessary dependencies:\n\n${pythonScript}\n\nOnly include direct dependencies, not built-in modules. Format the output as a valid requirements.txt file.`;
-      const content = await generateContent(prompt);
-      setGeneratedContent(content);
+      
+      const result = await generateWithAI(prompt, 'GEMINI');
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      setGeneratedContent(result.content);
     } catch (error) {
       toast({
         title: "Error in requirements.txt Generator",
