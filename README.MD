@@ -49,6 +49,27 @@ Welcome to DevForge, your all-in-one solution for project documentation and setu
 - 🎨 **Custom Fields**: Personalize your license
 - 💾 **Multiple Formats**: Export in various file types
 
+### 🔧 Code Gen
+
+- 🤖 AI-Powered Generation: Generate code with AI assistance
+- 🚀 Unit Test Generation: Automatically create unit tests
+- 🌐 API Endpoint: Generate API endpoint documentation
+- 🖥️ TypeScript Interface: Create TypeScript interfaces
+
+### 🔍 Analysis
+
+- 🔍 Code Quality Assessment: Analyze your code for improvements
+- 🔒 Security Scan: Check for potential security vulnerabilities
+- 💪 Performance Check: Optimize your code's performance
+- 👍 Best Practices: Suggest industry-standard best practices
+
+### 📄 Docs
+
+- 📚 API Documentation: Generate comprehensive API docs
+- 💬 Code Comments: Add informative comments to your code
+- 🗺️ Architecture Diagrams: Visualize your application's architecture
+- 📝 Function Documentation: Detailed documentation for your functions
+
 ## 🛠️ Tech Stack
 - **Framework**: 
   - [Next.js 14](https://nextjs.org/)
@@ -59,6 +80,7 @@ Welcome to DevForge, your all-in-one solution for project documentation and setu
   - [Shadcn/UI](https://ui.shadcn.com/)
 - **AI Integration**:
   - [Gemini Flash 1.5](https://gemini.google.com/)
+  - [X_AI](https://x.ai/)
 
 ## 🏁 Getting Started
 
@@ -106,6 +128,21 @@ Welcome to DevForge, your all-in-one solution for project documentation and setu
 2. Fill in project details
 3. Generate license file
 4. Implement in your project
+
+### Code Gen
+1. Choose from Unit Test Generation, TypeScript Interface, API Endpoint, and more
+2. Enter your prompt or requirements
+3. Generate the code
+
+### Analysis
+1. Choose from Code Quality Assessment, Security Scan, Performance Check, and Best Practices
+2. Enter your prompt or requirements
+3. Analyze your code
+
+### Docs
+1. Choose from API Documentation, Code Comments, Architecture Diagrams, and Function Documentation
+2. Enter your prompt or requirements
+3. Generate comprehensive documentation
 
 ## 🤝 Contributing
 We welcome contributions! Here's how you can help:
